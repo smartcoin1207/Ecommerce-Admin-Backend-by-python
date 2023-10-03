@@ -4,8 +4,8 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session, aliased
 from datetime import date, datetime, timedelta
 from collections import defaultdict
-from models import Category, Inventory, InventoryChangeLog, Sale, Product
-from utils.validations import get_interval_duration_and_format
+from models.models import Category, Inventory, InventoryChangeLog, Sale, Product
+from utils.utilities import get_interval_duration_and_format
 
 
 def get_product_by_name(db: Session, product_name: str):
@@ -172,6 +172,7 @@ def update_inventory(db: Session, product_name: str, quantity_to_add: int):
     change_log = InventoryChangeLog(
         product_id=product.id,
         quantity_change=quantity_to_add,
+        timestamp=datetime.now(),
         new_quantity=new_quantity,
     )
 
@@ -212,12 +213,15 @@ def get_inventory_changes_by_time_range(
 
     result = [
         {
-            "timestamp": change.timestamp.strftime("%m/%d/%Y, %H:%M:%S"),
+            "timestamp": change.timestamp.strftime("%m/%d/%Y, %H:%M:%S")
+            if change.timestamp
+            else None,
             "product_name": product_name,
             "quantity_change": change.quantity_change,
             "new_quantity": change.new_quantity,
         }
         for change, product_name in change_log
+        if change and product_name
     ]
 
     return result

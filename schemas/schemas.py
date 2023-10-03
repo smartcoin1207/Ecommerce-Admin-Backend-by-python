@@ -39,7 +39,7 @@ class InventoryUpdateResponse(BaseModel):
 
 class InventoryChangeLogBase(BaseModel):
     product_name: str
-    timestamp: str
+    timestamp: str | None
     new_quantity: int
     quantity_change: int
 

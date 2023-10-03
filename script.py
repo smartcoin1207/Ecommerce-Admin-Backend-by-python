@@ -1,62 +1,58 @@
-from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from random import randint
-from models import Category, Product, Sale, Inventory, InventoryChangeLog
-from database import SessionLocal
+from models.models import Category, Product, Sale, Inventory, InventoryChangeLog
+from db.database import SessionLocal
 
-# Replace 'your_database_url' with the actual database URL
 DATABASE_URL = "sqlite:///_ecommerce.db"
 
-
-# Initialize the database session
 db = SessionLocal()
 
 
 categories_data = [
-    {"name": "Personal Care"},
-    {"name": "Beverages"},
-    {"name": "Dairy"},
-    {"name": "Bakery"},
+    {"name": "electronics"},
+    {"name": "furniture"},
+    {"name": "cars"},
+    {"name": "kitchen"},
     # Add more category data if needed
 ]
 
 # Sample data for products
 products_data = [
     {
-        "name": "Soap",
-        "description": "This is a premium soap",
-        "price": 19.99,
+        "name": "Iphone",
+        "description": "A premium quality mobile phone",
+        "price": 200000.99,
         "category_id": 1,
     },
     {
-        "name": "Bottle",
-        "description": "This is a carbonated soft drink",
-        "price": 29.99,
+        "name": "Bed",
+        "description": "Gives uninterrupted sleep",
+        "price": 15000.00,
         "category_id": 2,
     },
     {
-        "name": "Conditioner",
-        "description": "This is a high quality conditioner",
-        "price": 39.99,
+        "name": "Refrigerator",
+        "description": "A high quality cooling machine",
+        "price": 20999.99,
         "category_id": 1,
     },
     {
-        "name": "Milk",
-        "description": "This is a healthy milk",
-        "price": 25.00,
+        "name": "Audi A6",
+        "description": "A world class car",
+        "price": 250000.00,
         "category_id": 3,
     },
     {
-        "name": "Bread",
-        "description": "This is a whole wheat bread",
-        "price": 15.00,
+        "name": "Sofa Set",
+        "description": "A world class sofa set",
+        "price": 10000.00,
+        "category_id": 2,
+    },
+    {
+        "name": "Oven",
+        "description": "A high quality oven",
+        "price": 22222.00,
         "category_id": 4,
-    },
-    {
-        "name": "Yogurt",
-        "description": "This is a low fat yogurt",
-        "price": 20.00,
-        "category_id": 3,
     },
     # Add more product data if needed
 ]
@@ -64,14 +60,11 @@ products_data = [
 db.bulk_save_objects([Category(**data) for data in categories_data])
 db.commit()
 
-# Add products to the database
 db.bulk_save_objects([Product(**data) for data in products_data])
 db.commit()
 
-# Sample data for sales
 sales_data = []
 
-# Generate random sales data for a period of time
 start_date = datetime(2021, 8, 1)
 end_date = datetime(2022, 11, 30)
 
@@ -79,11 +72,9 @@ while start_date <= end_date:
     for product in db.query(Product).all():
         quantity_sold = randint(1, 10)
 
-        # Generate random hours and minutes
         hours = randint(0, 23)
         minutes = randint(0, 59)
 
-        # Combine date, hours, and minutes
         sale_timestamp = datetime(
             start_date.year, start_date.month, start_date.day, hours, minutes
         )
@@ -96,10 +87,8 @@ while start_date <= end_date:
         sales_data.append(sale)
     start_date += timedelta(days=1)
 
-# Sample data for inventory
 inventory_data = []
 
-# Initialize inventory data for each product
 for product in db.query(Product).all():
     initial_stock = randint(20, 100)
     low_stock_alert_threshold = 10
@@ -110,15 +99,13 @@ for product in db.query(Product).all():
     )
     inventory_data.append(inventory)
 
-# Sample data for inventory change logs
-inventory_change_logs_data = []
 
+inventory_change_logs_data = []
 start_date = datetime(2021, 8, 1)
 
-# Generate inventory change logs
 for product in db.query(Product).all():
-    for _ in range(5):  # Generate 5 random change logs per product
-        quantity_change = randint(0, 50)  # Random quantity change
+    for _ in range(5):
+        quantity_change = randint(0, 50)
         new_quantity = (
             product.inventory[0].current_stock + quantity_change
             if product.inventory
@@ -135,19 +122,14 @@ for product in db.query(Product).all():
         inventory_change_logs_data.append(change_log)
 
 
-# Function to populate the database with sample data
 def populate_database():
     try:
-        # Add sales to the database
         db.bulk_save_objects(sales_data)
 
-        # Add inventory to the database
         db.bulk_save_objects(inventory_data)
 
-        # Add inventory change logs to the database
         db.bulk_save_objects(inventory_change_logs_data)
 
-        # Commit the changes
         db.commit()
         print("Sample data has been inserted into the database.")
     except Exception as e:
