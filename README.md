@@ -54,7 +54,6 @@ Description: This endpoint retrieves inventory status, including information abo
 
 Description: This endpoint allows you to update the inventory level of a specific product. You can provide the product name and the quantity to add to the inventory. If the product is not found, it returns a 404 error.
 
-Inventory Changes
 ### 5- Endpoint: `/inventory/changes/`
 #### Purpose: Track changes to inventory over time
 
